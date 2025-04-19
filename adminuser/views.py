@@ -2,11 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.utils.timezone import now, timedelta
-from django.db.models import Count, Avg, Sum
+from django.db.models import Count, Sum
 from users.models import User
 from orders.models import Order
 from products.models import Product
-from .serializers import TopProductSerializer, TopUserSerializer  # Adjust if location differs
+from .serializers import TopProductSerializer, TopUserSerializer
 
 class AdminDashboardView(APIView):
 
@@ -37,11 +37,15 @@ class AdminDashboardView(APIView):
         # Top 5 liked products (based on number of reviews)
         top_liked_products = Product.objects.annotate(
             total_reviews=Count('reviews')
-        ).order_by('-total_reviews')[:5]
+        ).order_by('-average_rating')[:5]
+
+        # top_liked_products = Product.objects.filter(
+        #     is_active=True
+        # ).order_by('-average_rating')[:5]
 
         # Top 5 users by total quantity purchased
         top_users = User.objects.annotate(
-            total_purchased=Sum('orders__items__quantity')
+            total_purchased=Sum('orders__items__quantity'),
         ).order_by('-total_purchased')[:5]
 
         # Monthly sales (this and previous month)

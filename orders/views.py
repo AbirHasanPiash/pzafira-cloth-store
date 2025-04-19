@@ -40,6 +40,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             'items__variant__color',
             'items__variant__size'
         )
+        if getattr(self, 'swagger_fake_view', False):
+            return queryset.none()
         if self.request.user.is_staff:
             return queryset
         return queryset.filter(user=self.request.user)

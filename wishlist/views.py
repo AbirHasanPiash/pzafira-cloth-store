@@ -20,6 +20,8 @@ class WishlistItemViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return WishlistItem.objects.none()
         return WishlistItem.objects.filter(wishlist__user=self.request.user)
 
     def create(self, request, *args, **kwargs):

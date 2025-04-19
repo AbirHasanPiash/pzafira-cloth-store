@@ -9,6 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class BrandSerializer(serializers.ModelSerializer):
+    logo = serializers.ImageField()
     class Meta:
         model = Brand
         fields = ['id', 'name', 'logo']
@@ -27,6 +28,7 @@ class SizeSerializer(serializers.ModelSerializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField()
     class Meta:
         model = ProductImage
         fields = ['id', 'image', 'is_primary', 'uploaded_at']

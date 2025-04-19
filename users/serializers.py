@@ -16,6 +16,7 @@ class CustomUserSerializer(UserSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.ImageField()
     class Meta:
         model = User
         fields = ['email', 'first_name', 'last_name', 'phone', 'profile_picture']

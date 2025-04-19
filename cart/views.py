@@ -14,6 +14,8 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Cart.objects.none()
         user = self.request.user
         if user.is_staff:
             return Cart.objects.all()
@@ -40,6 +42,8 @@ class CartItemViewSet(viewsets.ModelViewSet):
         queryset = CartItem.objects.select_related(
             'cart', 'variant', 'variant__product', 'variant__color', 'variant__size'
         )
+        if getattr(self, 'swagger_fake_view', False):
+            return Cart.objects.none()
         if self.request.user.is_staff:
             return queryset
         return queryset.filter(cart__user=self.request.user)

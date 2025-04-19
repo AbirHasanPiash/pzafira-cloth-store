@@ -12,7 +12,7 @@ class TopProductSerializer(serializers.ModelSerializer):
 
 class TopUserSerializer(serializers.ModelSerializer):
     total_purchased = serializers.IntegerField()
-
+  
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'email', 'total_purchased']
