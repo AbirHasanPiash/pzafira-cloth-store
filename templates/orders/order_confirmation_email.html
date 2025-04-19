@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f9fc;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #e6e6e6;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #2c3e50;
+        }
+        .content p {
+            font-size: 16px;
+            color: #333333;
+            margin: 12px 0;
+        }
+        .order-summary {
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .order-summary h3 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+        .order-item {
+            margin: 8px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #999999;
+            margin-top: 30px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Thank You for Your Order!</h1>
+        </div>
+        <div class="content">
+            <p>Hi {{ user.first_name }},</p>
+            <p>We’ve received your order and are getting it ready to be shipped. Here’s a summary:</p>
+            
+            <div class="order-summary">
+                <h3>Order #{{ order.id }}</h3>
+                <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
+                <p><strong>Total:</strong> ৳{{ order.total_price }}</p>
+                <hr>
+                <h4>Items:</h4>
+                {% for item in order_items %}
+                    <div class="order-item">
+                        {{ item.variant.product.name }} - {{ item.variant.color.name }} - {{ item.variant.size.name }} : {{ item.quantity }} X {{ item.price }} = ৳{{ item.total_price }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <p>We’ll notify you when your order is shipped.</p>
+            <p>Thanks for shopping with <strong>PZAFIRA</strong>!</p>
+        </div>
+        <div class="footer">
+            &copy; {{ now|date:"Y" }} PZAFIRA. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
