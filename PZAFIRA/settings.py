@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     "whitenoise.runserver_nostatic",
     "debug_toolbar",
+    "corsheaders",
     'djoser',
     'django_filters',
     'drf_yasg',
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -80,7 +82,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'PZAFIRA.urls'
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 TEMPLATES = [
     {
