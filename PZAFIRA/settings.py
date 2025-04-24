@@ -83,6 +83,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'PZAFIRA.urls'
 
 CORS_ALLOWED_ORIGINS = [
+    "https://practice-module-35-5.vercel.app/",
     "http://localhost:5173",
 ]
 
