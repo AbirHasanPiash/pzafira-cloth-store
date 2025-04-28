@@ -14,6 +14,7 @@ class WishlistItem(models.Model):
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
 
     class Meta:
+        ordering = ['id']
         unique_together = ('wishlist', 'variant')
 
     def __str__(self):

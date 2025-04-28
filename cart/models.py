@@ -14,4 +14,5 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
 
     class Meta:
+        ordering = ['id']
         unique_together = ('cart', 'variant')

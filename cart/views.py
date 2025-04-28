@@ -9,13 +9,19 @@ from .serializers import CartSerializer, CartItemSerializer
 class CartViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint for viewing the authenticated user's cart.
-    Only supports list and retrieve actions.
-    Admins can view all carts.
+
+    - Authenticated users can view their own cart.
+    - Admins can view all user carts.
+    - No updates or deletions are allowed through this view.
     """
     serializer_class = CartSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """
+        Returns the carts for the authenticated user.
+        Admins can view all carts.
+        """
         if getattr(self, 'swagger_fake_view', False):
             return Cart.objects.none()
         user = self.request.user
@@ -24,15 +30,18 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
         return Cart.objects.filter(user=user)
 
     def get_object(self):
+        """
+        Retrieves the authenticated user's cart.
+        """
         return get_object_or_404(Cart, user=self.request.user)
-    
+
     @action(detail=False, methods=['delete'], url_path='clear')
     def clear_cart(self, request):
         """
-        Custom action to clear the authenticated user's cart.
+        Clears all items from the authenticated user's cart.
         """
         cart = get_object_or_404(Cart, user=request.user)
-        cart.items.all().delete()  # Deletes all CartItem objects
+        cart.items.all().delete()
         return Response({"detail": "Cart cleared successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -40,23 +49,22 @@ class CartItemViewSet(viewsets.ModelViewSet):
     """
     API endpoint for managing items in the user's cart.
 
-    - Add items to the cart
-    - Update quantity of items
-    - Remove items from the cart
-
-    Access restricted to cart owners and admins.
+    - Users can only access their own cart items.
+    - Admins can view all carts but not cart items of other users.
     """
     serializer_class = CartItemSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """
+        Users can only see their own cart items.
+        Admins can see only their own cart items too (for security).
+        """
         queryset = CartItem.objects.select_related(
             'cart', 'variant', 'variant__product', 'variant__color', 'variant__size'
         )
         if getattr(self, 'swagger_fake_view', False):
             return Cart.objects.none()
-        if self.request.user.is_staff:
-            return queryset
         return queryset.filter(cart__user=self.request.user)
 
     def perform_create(self, serializer):
@@ -83,33 +91,19 @@ class CartItemViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         instance = serializer.instance
-
-        if instance.cart.user != self.request.user and not self.request.user.is_staff:
+        if instance.cart.user != self.request.user:
             raise permissions.PermissionDenied('You do not have permission to edit this cart item.')
 
         new_variant = serializer.validated_data.get('variant', instance.variant)
-
-        if new_variant != instance.variant:
-            existing_item = CartItem.objects.filter(
-                cart=instance.cart,
-                variant=new_variant
-            ).exclude(id=instance.id).first()
-
-            if existing_item:
-                cart, _ = Cart.objects.get_or_create(user=self.request.user)
-                quantity = serializer.validated_data.get('quantity')
-                if quantity <= existing_item.stock:
-                    item = CartItem.objects.get_or_create(cart=cart, variant=existing_item)
-                    item.save()
-                    
         new_quantity = serializer.validated_data.get('quantity', instance.quantity)
+
         if new_quantity > new_variant.stock:
             raise serializers.ValidationError({'quantity': 'Requested quantity exceeds available stock.'})
 
         serializer.save()
 
-
     def perform_destroy(self, instance):
-        if instance.cart.user != self.request.user and not self.request.user.is_staff:
+        if instance.cart.user != self.request.user:
             raise permissions.PermissionDenied('You do not have permission to delete this cart item.')
         instance.delete()
+
