@@ -21,8 +21,22 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'variant', 'variant_detail', 'quantity']
 
     def validate(self, attrs):
-        variant = attrs.get('variant')
         quantity = attrs.get('quantity')
+        if quantity is None:
+            raise serializers.ValidationError(
+                {"quantity": "This field is required."}
+            )
+
+        # If creating (no instance), variant must come from attrs
+        if self.instance is None:
+            variant = attrs.get('variant')
+            if variant is None:
+                raise serializers.ValidationError(
+                    {"variant_detail": "This field is required for creating a cart item."}
+                )
+        else:
+            # Updating: get variant from existing instance
+            variant = self.instance.variant
 
         if quantity <= 0:
             raise serializers.ValidationError(
