@@ -1,5 +1,7 @@
-from rest_framework import viewsets, permissions, serializers
+from rest_framework import viewsets, permissions, serializers, status
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from .models import Cart, CartItem
 from .serializers import CartSerializer, CartItemSerializer
 
@@ -23,6 +25,15 @@ class CartViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_object(self):
         return get_object_or_404(Cart, user=self.request.user)
+    
+    @action(detail=False, methods=['delete'], url_path='clear')
+    def clear_cart(self, request):
+        """
+        Custom action to clear the authenticated user's cart.
+        """
+        cart = get_object_or_404(Cart, user=request.user)
+        cart.items.all().delete()  # Deletes all CartItem objects
+        return Response({"detail": "Cart cleared successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
 class CartItemViewSet(viewsets.ModelViewSet):
