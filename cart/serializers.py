@@ -12,7 +12,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         queryset=ProductVariant.objects.select_related('product', 'color', 'size'),
         source='variant',
         write_only=True,
-        required=True
+        required=False
     )
     quantity = serializers.IntegerField(required=True, min_value=1)
 
