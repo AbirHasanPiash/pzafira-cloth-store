@@ -81,13 +81,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         # Load cart items with related variant data
         items = CartItem.objects.select_related(
             'variant', 'variant__color', 'variant__size', 'variant__product'
-        ).filter(cart=cart)
+        ).select_for_update().filter(cart=cart)
 
         if not items.exists():
             return Response({'error': 'Cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create order
-        order = Order.objects.create(user=user, total_price=0)
+        order = Order.objects.create(user=user, total_price=0, payment_status='paid', status='processing')
         total_price = 0
         order_items = []
         updated_variants = []
