@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect
 from sslcommerz_lib import SSLCOMMERZ
 from orders.views import OrderViewSet
 from rest_framework.test import APIRequestFactory, force_authenticate
-from rest_framework.permissions import IsAuthenticated
 from datetime import date
 
 
@@ -64,7 +63,6 @@ def initiate_payment(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def payment_success(request):
     user = request.user
     tran_id = request.data.get("tran_id")
@@ -89,13 +87,11 @@ def payment_success(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def payment_cancel(request):
     return HttpResponseRedirect(f"{settings.FRONTEND_URL}/payment/cancel/")
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def payment_fail(request):
     return HttpResponseRedirect(f"{settings.FRONTEND_URL}/payment/fail/")
 
