@@ -7,6 +7,7 @@ from .models import CartItem, Cart
 
 
 class CartItemSerializer(serializers.ModelSerializer):
+    cart = serializers.PrimaryKeyRelatedField(read_only=True)
     variant = ProductVariantSerializer(read_only=True)
     variant_detail = serializers.PrimaryKeyRelatedField(
         queryset=ProductVariant.objects.select_related('product', 'color', 'size'),
@@ -18,7 +19,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartItem
-        fields = ['id', 'variant', 'variant_detail', 'quantity']
+        fields = ['id', 'cart', 'variant', 'variant_detail', 'quantity']
 
     def validate(self, attrs):
         quantity = attrs.get('quantity')

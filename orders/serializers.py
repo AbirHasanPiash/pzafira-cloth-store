@@ -15,6 +15,7 @@ class OrderSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True)
     total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    tran_id = serializers.CharField(read_only=True)
 
     class Meta:
         model = Order
@@ -28,6 +29,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'items',
+            'tran_id',
         ]
         read_only_fields = [
             'id',
@@ -36,4 +38,5 @@ class OrderSerializer(serializers.ModelSerializer):
             'updated_at',
             'items',
             'payment_status',
+            'tran_id',
         ]

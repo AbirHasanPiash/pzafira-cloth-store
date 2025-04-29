@@ -83,7 +83,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'PZAFIRA.urls'
 
 CORS_ALLOWED_ORIGINS = [
-    "https://practice-module-35-5.vercel.app/",
+    "https://practice-module-35-5.vercel.app",
     "http://localhost:5173",
 ]
 
@@ -159,6 +159,10 @@ TIME_ZONE = 'Asia/Dhaka'
 USE_I18N = True
 
 USE_TZ = True
+
+
+FRONTEND_URL = config('FRONTEND_URL')
+BACKEND_URL = config('BACKEND_URL')
 
 
 cloudinary.config( 
