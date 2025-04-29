@@ -11,7 +11,6 @@ from datetime import date
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def initiate_payment(request):
     user = request.user
     amount = request.data.get("amount")
