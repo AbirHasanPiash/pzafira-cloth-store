@@ -2,12 +2,20 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from cart.models import Cart
 from django.http import HttpResponseRedirect
 from sslcommerz_lib import SSLCOMMERZ
 from orders.views import OrderViewSet
 from rest_framework.test import APIRequestFactory, force_authenticate
 from datetime import date
+from django.http import JsonResponse
 
+
+def extract_cart_id_from_tran_id(tran_id):
+    try:
+        return int(tran_id.replace("transectionId", "")[:-8])
+    except:
+        return None
 
 
 @api_view(['POST'])
@@ -63,26 +71,34 @@ def initiate_payment(request):
 
 @api_view(['POST'])
 def payment_success(request):
-    user = request.user
-    tran_id = request.data.get("tran_id")
-    factory = APIRequestFactory()
+    tran_id = request.data.get("tran_id")  # get transaction ID from SSLCOMMERZ
+    print("Incoming payment with tran_id:", tran_id)
+
+    # Extract cart_id from tran_id
+    cart_id = extract_cart_id_from_tran_id(tran_id)
+    cart = Cart.objects.select_related('user').filter(id=cart_id).first()
+
+    if not cart:
+        return Response({"error": "Cart not found for transaction."}, status=400)
+
+    user = cart.user
 
     # Simulate a request to the checkout action
-    checkout_request = factory.post('/orders/api/orders/checkout/', data={'tran_id': tran_id})
+    factory = APIRequestFactory()
+    checkout_request = factory.post(
+        '/orders/api/orders/checkout/',
+        {"tran_id": tran_id},  # Pass the tran_id to be saved
+        format='json'
+    )
     force_authenticate(checkout_request, user=user)
 
     view = OrderViewSet.as_view({'post': 'checkout'})
     response = view(checkout_request)
 
-    # If successful, redirect to frontend
     if response.status_code == 201:
         return HttpResponseRedirect(f"{settings.FRONTEND_URL}/payment/success/")
-
-    # Otherwise return error
-    return Response(
-        {"error": "Checkout failed after payment."},
-        status=status.HTTP_400_BAD_REQUEST
-    )
+    
+    return JsonResponse({"error": "Checkout failed after payment."}, status=400)
 
 
 @api_view(['POST'])
