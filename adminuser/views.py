@@ -2,11 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.utils.timezone import now, timedelta
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, DecimalField
+from decimal import Decimal
 from users.models import User
 from orders.models import Order
 from products.models import Product
 from .serializers import TopProductSerializer, TopUserSerializer
+from django.db.models.functions import Coalesce
 
 class AdminDashboardView(APIView):
 
@@ -39,13 +41,9 @@ class AdminDashboardView(APIView):
             total_reviews=Count('reviews')
         ).order_by('-average_rating')[:5]
 
-        # top_liked_products = Product.objects.filter(
-        #     is_active=True
-        # ).order_by('-average_rating')[:5]
-
         # Top 5 users by total quantity purchased
         top_users = User.objects.annotate(
-            total_purchased=Sum('orders__items__quantity'),
+            total_purchased=Coalesce(Sum('orders__total_price'), Decimal(0.00), output_field=DecimalField(max_digits=10, decimal_places=2))
         ).order_by('-total_purchased')[:5]
 
         # Monthly sales (this and previous month)

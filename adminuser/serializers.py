@@ -11,7 +11,7 @@ class TopProductSerializer(serializers.ModelSerializer):
 
 
 class TopUserSerializer(serializers.ModelSerializer):
-    total_purchased = serializers.IntegerField()
+    total_purchased = serializers.DecimalField(max_digits=10, decimal_places=2)
   
     class Meta:
         model = User

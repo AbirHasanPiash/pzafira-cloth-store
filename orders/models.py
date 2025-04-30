@@ -29,7 +29,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['-id']
 
     def __str__(self):
         return f"Order #{self.id} by {self.user}"
