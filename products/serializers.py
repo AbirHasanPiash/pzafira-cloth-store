@@ -9,7 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class BrandSerializer(serializers.ModelSerializer):
-    logo = serializers.ImageField()
+    logo = serializers.ImageField(required=False, allow_null=True)
     class Meta:
         model = Brand
         fields = ['id', 'name', 'logo']
