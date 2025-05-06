@@ -54,12 +54,13 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     product = serializers.CharField(source='product.name')
+    product_id = serializers.IntegerField(source='product.id')
     color = serializers.CharField(source='color.name')
     size = serializers.CharField(source='size.name')
 
     class Meta:
         model = ProductVariant
-        fields = ['id', 'product', 'color', 'size', 'stock', 'price']
+        fields = ['id', 'product', 'product_id', 'color', 'size', 'stock', 'price']
 
 
 class DetailProductSerializer(serializers.ModelSerializer):
