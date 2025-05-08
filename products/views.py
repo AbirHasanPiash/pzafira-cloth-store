@@ -17,6 +17,7 @@ from .serializers import (
 )
 from .permissions import IsAdminOrReadOnly
 from .filters import ProductFilter
+from common.paginations import CustomPagination
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -28,6 +29,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = CustomPagination
     permission_classes = [IsAdminOrReadOnly]
 
 
@@ -40,6 +42,7 @@ class BrandViewSet(viewsets.ModelViewSet):
     """
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
+    pagination_class = CustomPagination
     permission_classes = [IsAdminOrReadOnly]
 
 
@@ -52,6 +55,7 @@ class ColorViewSet(viewsets.ModelViewSet):
     """
     queryset = Color.objects.all()
     serializer_class = ColorSerializer
+    pagination_class = CustomPagination
     permission_classes = [IsAdminOrReadOnly]
 
 
@@ -64,6 +68,7 @@ class SizeViewSet(viewsets.ModelViewSet):
     """
     queryset = Size.objects.all()
     serializer_class = SizeSerializer
+    pagination_class = CustomPagination
     permission_classes = [IsAdminOrReadOnly]
 
 

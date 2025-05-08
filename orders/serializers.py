@@ -37,6 +37,6 @@ class OrderSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'items',
-            'payment_status',
+            # 'payment_status',
             'tran_id',
         ]
