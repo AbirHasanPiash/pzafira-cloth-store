@@ -7,6 +7,7 @@ from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from .permissions import IsAdminOrReadOnlyOrder
 from products.models import ProductVariant
+from common.paginations import CustomPagination
 
 class OrderViewSet(viewsets.ModelViewSet):
     """
@@ -33,6 +34,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnlyOrder]
     serializer_class = OrderSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         queryset = Order.objects.select_related('user').prefetch_related(
@@ -73,6 +75,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     def checkout(self, request):
         user = request.user
         tran_id = request.data.get("tran_id")
+        shipping_address = request.data.get("address")
 
         # Get the user's cart
         cart = Cart.objects.select_related('user').filter(user=user).first()
@@ -88,7 +91,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create order
-        order = Order.objects.create(user=user, total_price=0, payment_status='paid', status='processing', tran_id=tran_id)
+        order = Order.objects.create(user=user, total_price=0, payment_status='paid', status='processing', tran_id=tran_id, shipping_address=shipping_address)
         total_price = 0
         order_items = []
         updated_variants = []

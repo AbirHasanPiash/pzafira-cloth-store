@@ -30,6 +30,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'updated_at',
             'items',
             'tran_id',
+            'shipping_address'
         ]
         read_only_fields = [
             'id',
@@ -39,4 +40,5 @@ class OrderSerializer(serializers.ModelSerializer):
             'items',
             # 'payment_status',
             'tran_id',
+            'shipping_address',
         ]

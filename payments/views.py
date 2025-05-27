@@ -9,6 +9,7 @@ from orders.views import OrderViewSet
 from rest_framework.test import APIRequestFactory, force_authenticate
 from datetime import date
 from django.http import JsonResponse
+from .models import TemporaryAddress
 
 
 def extract_cart_id_from_tran_id(tran_id):
@@ -24,6 +25,22 @@ def initiate_payment(request):
     amount = request.data.get("amount")
     cart_id = request.data.get("cartId")
     total_items = request.data.get("totalItems")
+    address = request.data.get("address")
+    city = request.data.get("city")
+    country = request.data.get("country")
+    unique_id = f"{cart_id}{date.today().strftime('%Y%m%d')}"
+
+    TemporaryAddress.objects.update_or_create(
+        user=user,
+        cart_id=cart_id,
+        unique_id=unique_id,
+        defaults={
+            'address': address,
+            'city': city,
+            'country': country
+        }
+    )
+
     if user.phone == None:
         user.phone = "01234567891"
 
@@ -46,9 +63,9 @@ def initiate_payment(request):
         'cus_name': f"{user.first_name} {user.last_name}",
         'cus_email': user.email,
         'cus_phone': user.phone,
-        'cus_add1': "Somewhere",
-        'cus_city': "From",
-        'cus_country': "The Earth",
+        'cus_add1': address,
+        'cus_city': city,
+        'cus_country': country,
         'shipping_method': "NO",
         'multi_card_name': "",
         'num_of_item': total_items,
@@ -58,7 +75,6 @@ def initiate_payment(request):
     }
 
     response = sslcz.createSession(post_body)
-    print(response)
 
     if response.get("status") == "SUCCESS":
         return Response({"payment_url": response["GatewayPageURL"]})
@@ -72,22 +88,35 @@ def initiate_payment(request):
 @api_view(['POST'])
 def payment_success(request):
     tran_id = request.data.get("tran_id")  # get transaction ID from SSLCOMMERZ
-    print("Incoming payment with tran_id:", tran_id)
 
     # Extract cart_id from tran_id
     cart_id = extract_cart_id_from_tran_id(tran_id)
     cart = Cart.objects.select_related('user').filter(id=cart_id).first()
+
 
     if not cart:
         return Response({"error": "Cart not found for transaction."}, status=400)
 
     user = cart.user
 
+    unique_id = f"{cart_id}{date.today().strftime('%Y%m%d')}"
+    temp_address = TemporaryAddress.objects.filter(unique_id=unique_id).first()
+    if not temp_address:
+        return Response({"error": "Address not found for this transaction."}, status=400)
+
+    address = temp_address.address
+    city = temp_address.city
+    country = temp_address.country
+    full_address = f"{address}, {city}, {country}"
+    temp_address.delete()
+
+
     # Simulate a request to the checkout action
     factory = APIRequestFactory()
     checkout_request = factory.post(
         '/orders/api/orders/checkout/',
-        {"tran_id": tran_id},  # Pass the tran_id to be saved
+        {"tran_id": tran_id,
+         "address": full_address},
         format='json'
     )
     force_authenticate(checkout_request, user=user)

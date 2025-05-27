@@ -84,7 +84,7 @@ ROOT_URLCONF = 'PZAFIRA.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "https://practice-module-35-5.vercel.app",
-    # "http://localhost:5173",
+    "http://localhost:5173",
     "https://pzafira.vercel.app",
 ]
 
@@ -164,6 +164,8 @@ USE_TZ = True
 
 FRONTEND_URL = config('FRONTEND_URL')
 BACKEND_URL = config('BACKEND_URL')
+# BACKEND_URL = "http://127.0.0.1:8000"
+
 
 
 cloudinary.config( 
@@ -200,7 +202,7 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 12,
+    'PAGE_SIZE': 20,
 }
 
 SIMPLE_JWT = {

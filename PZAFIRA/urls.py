@@ -48,6 +48,7 @@ urlpatterns = [
     path('payment/api/', include('payments.urls')),
     path('cart/api/', include('cart.urls')),
     path('wishlist/api/', include('wishlist.urls')),
+    path('shipping/api/', include('shipping.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ] + debug_toolbar_urls()
