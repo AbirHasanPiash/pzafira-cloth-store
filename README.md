@@ -25,7 +25,7 @@
 - **Auth:** JWT (SimpleJWT), Djoser
 - **Database:** PostgreSQL
 - **Docs:** drf-yasg (Swagger)
-- **Others:** Django Filters, Decouple
+- **Others:** Django Filters, Decouple, Email notification.
 
 ---
 
@@ -34,7 +34,7 @@
 ```bash
 # Clone the repo
 git clone https://github.com/AbirHasanPiash/pzafira-cloth-store
-cd pzafira
+cd pzafira-cloth-store
 
 # Create and activate virtual environment
 python -m venv env
