@@ -64,3 +64,17 @@ EMAIL_USE_TLS=True
 EMAIL_HOST_USER=your@email.com
 EMAIL_HOST_PASSWORD=yourpassword
 DEFAULT_FROM_EMAIL=your@email.com
+```
+
+## 🧑‍💻 Author
+
+**[MD. ABIR HASAN PIASH](https://www.linkedin.com/in/a-h-piash/)**  
+📧 [abirhasanpiash@gmail.com](mailto:abirhasanpiash@gmail.com)  
+🔗 [GitHub Profile](https://github.com/AbirHasanPiash)
+
+---
+
+## 📄 License
+
+This project is licensed under the **[MIT License](LICENSE)**.  
+Feel free to use, modify, and distribute this project with proper attribution.
