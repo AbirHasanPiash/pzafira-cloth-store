@@ -16,10 +16,11 @@ class CartItemSerializer(serializers.ModelSerializer):
         required=False
     )
     quantity = serializers.IntegerField(required=True, min_value=1)
+    image = serializers.URLField(required=False, allow_null=True)
 
     class Meta:
         model = CartItem
-        fields = ['id', 'cart', 'variant', 'variant_detail', 'quantity']
+        fields = ['id', 'cart', 'variant', 'variant_detail', 'quantity', 'image',]
 
     def validate(self, attrs):
         quantity = attrs.get('quantity')

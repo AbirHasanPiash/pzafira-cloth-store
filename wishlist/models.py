@@ -12,6 +12,7 @@ class Wishlist(models.Model):
 class WishlistItem(models.Model):
     wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE, related_name='items')
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
+    image = models.URLField(null=True, blank=True)
 
     class Meta:
         ordering = ['id']

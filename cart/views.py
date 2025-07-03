@@ -71,6 +71,7 @@ class CartItemViewSet(viewsets.ModelViewSet):
         cart, _ = Cart.objects.get_or_create(user=self.request.user)
         variant = serializer.validated_data['variant']
         quantity = serializer.validated_data['quantity']
+        image = serializer.validated_data.get('image')
 
         existing_item = CartItem.objects.filter(cart=cart, variant=variant).first()
 
@@ -87,7 +88,8 @@ class CartItemViewSet(viewsets.ModelViewSet):
                 raise serializers.ValidationError(
                     f"Only {variant.stock} items available."
                 )
-            serializer.save(cart=cart)
+            serializer.save(cart=cart, image=image)
+
 
     def perform_update(self, serializer):
         instance = serializer.instance
@@ -100,7 +102,8 @@ class CartItemViewSet(viewsets.ModelViewSet):
         if new_quantity > new_variant.stock:
             raise serializers.ValidationError({'quantity': 'Requested quantity exceeds available stock.'})
 
-        serializer.save()
+        image = serializer.validated_data.get('image', instance.image)
+        serializer.save(image=image)
 
     def perform_destroy(self, instance):
         if instance.cart.user != self.request.user:

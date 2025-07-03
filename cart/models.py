@@ -12,6 +12,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    image = models.URLField(null=True, blank=True)
 
     class Meta:
         ordering = ['id']

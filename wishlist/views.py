@@ -26,6 +26,7 @@ class WishlistItemViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         variant_id = request.data.get('variant_id')
+        image = request.data.get('image')
         if not variant_id:
             return Response({'error': 'Variant ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -35,7 +36,7 @@ class WishlistItemViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Product variant not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        item, created = WishlistItem.objects.get_or_create(wishlist=wishlist, variant=variant)
+        item, created = WishlistItem.objects.get_or_create(wishlist=wishlist, variant=variant, defaults={'image': image})
 
         if not created:
             return Response({'message': 'Already in wishlist.'}, status=status.HTTP_200_OK)
