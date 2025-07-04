@@ -8,7 +8,7 @@ from users.models import User
 from orders.models import Order
 from products.models import Product
 from .serializers import TopProductSerializer, TopUserSerializer
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, TruncDay, TruncMonth
 
 class AdminDashboardView(APIView):
 
@@ -69,3 +69,56 @@ class AdminDashboardView(APIView):
             "sales_this_month": sales_this_month,
             "sales_last_month": sales_last_month,
         })
+    
+
+# ✅ 1. Daily Orders - Current Month
+class DailyOrdersCurrentMonth(APIView):
+    def get(self, request):
+        start = now().replace(day=1)
+        orders = (
+            Order.objects.filter(created_at__date__gte=start, payment_status='paid')
+            .annotate(day=TruncDay('created_at'))
+            .values('day')
+            .annotate(count=Count('id'))
+            .order_by('day')
+        )
+        return Response(orders)
+
+# ✅ 2. Monthly Orders - Last 12 Months
+class MonthlyOrdersLast12(APIView):
+    def get(self, request):
+        start = now() - timedelta(days=365)
+        orders = (
+            Order.objects.filter(created_at__date__gte=start, payment_status='paid')
+            .annotate(month=TruncMonth('created_at'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        return Response(orders)
+
+# ✅ 3. Daily Sales - Current Month
+class DailySalesCurrentMonth(APIView):
+    def get(self, request):
+        start = now().replace(day=1)
+        sales = (
+            Order.objects.filter(created_at__date__gte=start, payment_status='paid')
+            .annotate(day=TruncDay('created_at'))
+            .values('day')
+            .annotate(total_sales=Sum('total_price'))
+            .order_by('day')
+        )
+        return Response(sales)
+
+# ✅ 4. Monthly Sales - Last 12 Months
+class MonthlySalesLast12(APIView):
+    def get(self, request):
+        start = now() - timedelta(days=365)
+        sales = (
+            Order.objects.filter(created_at__date__gte=start, payment_status='paid')
+            .annotate(month=TruncMonth('created_at'))
+            .values('month')
+            .annotate(total_sales=Sum('total_price'))
+            .order_by('month')
+        )
+        return Response(sales)

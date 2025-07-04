@@ -31,6 +31,9 @@ class Order(models.Model):
 
     class Meta:
         ordering = ['-id']
+        indexes = [
+        models.Index(fields=["created_at"]),
+    ]
 
     def __str__(self):
         return f"Order #{self.id} by {self.user}"
