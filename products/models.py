@@ -33,7 +33,13 @@ class Size(models.Model):
 
 
 class Product(models.Model):
+    TARGET_CHOICES = [
+        ('men', 'Men'),
+        ('women', 'Women'),
+        ('kids', 'Kids'),
+    ]
     name = models.CharField(max_length=255)
+    target_audience = models.CharField(max_length=10, choices=TARGET_CHOICES, default='men')
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, related_name='products')

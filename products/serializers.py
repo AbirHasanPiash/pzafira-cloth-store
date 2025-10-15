@@ -47,7 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'description', 'category', 'brand',
+            'id', 'name', 'target_audience', 'description', 'category', 'brand',
              'images', 'is_active', 'created_at'
         ]
 
@@ -73,15 +73,31 @@ class DetailProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'description', 'category', 'brand', 'images',
+            'id', 'name', 'target_audience', 'description', 'category', 'brand', 'images',
             'variants', 'reviews', 'average_rating', 'is_active', 'created_at'
         ]
 
 
 class ProductCreateUpdateSerializer(serializers.ModelSerializer):
+    brand = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Brand.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Category.objects.all()
+    )
+
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'category', 'brand', 'is_active']
+        fields = [
+            'name',
+            'target_audience',
+            'description',
+            'brand',
+            'category',
+            'is_active',
+        ]
 
 
 class ProductVariantCreateSerializer(serializers.ModelSerializer):
